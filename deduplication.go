@@ -17,87 +17,85 @@ func NewDeduplication() *Deduplication {
 	return new(Deduplication)
 }
 
-func (u *Deduplication) Validation(args interface{}) Deduplication {
+func (d *Deduplication) validation(args interface{}) Deduplication {
 	switch reflect.TypeOf(args).Kind() {
 	case reflect.Slice, reflect.Array:
 		targetValue := reflect.ValueOf(args)
-		u.Value = &targetValue
+		d.Value = &targetValue
 	default:
-		u.Error = errors.New("invalid type")
+		d.Error = errors.New("invalid type")
 	}
-
-	return *u
+	return *d
 }
 
-func (u *Deduplication) duplicationStr() {
-	encountered := make(map[string]struct{}, u.Value.Len())
-	for i := 0; i < u.Value.Len(); i++ {
-		element := u.Value.Index(i).String()
+func (d *Deduplication) duplicationStr() {
+	encountered := make(map[string]struct{}, d.Value.Len())
+	for i := 0; i < d.Value.Len(); i++ {
+		element := d.Value.Index(i).String()
 		if _, ok := encountered[element]; !ok {
 			encountered[element] = struct{}{}
-			u.SliceStr = append(u.SliceStr, element)
+			d.SliceStr = append(d.SliceStr, element)
 		}
 	}
 }
 
-func (u *Deduplication) duplicationInt() {
-	encountered := make(map[int]struct{}, u.Value.Len())
-	for i := 0; i < u.Value.Len(); i++ {
-		element := int(u.Value.Index(i).Int())
+func (d *Deduplication) duplicationInt() {
+	encountered := make(map[int]struct{}, d.Value.Len())
+	for i := 0; i < d.Value.Len(); i++ {
+		element := int(d.Value.Index(i).Int())
 		if _, ok := encountered[element]; !ok {
 			encountered[element] = struct{}{}
-			u.SliceInt = append(u.SliceInt, element)
+			d.SliceInt = append(d.SliceInt, element)
 		}
 	}
 }
 
-func (u Deduplication) Do(args interface{}) Deduplication {
-	if u.Validation(args).Error != nil {
-		return u
+func (d Deduplication) Do(args interface{}) Deduplication {
+	if d.validation(args).Error != nil {
+		return d
 	}
-	switch u.Value.Type().Elem().Kind() {
+	switch d.Value.Type().Elem().Kind() {
 	case reflect.String:
-		u.duplicationStr()
+		d.duplicationStr()
 	case reflect.Int:
-		u.duplicationInt()
+		d.duplicationInt()
 	default:
-		fmt.Println(u.Value.Type().Elem())
+		d.Error = errors.New("Unknown type: " + d.Value.Type().Elem().String())
+		fmt.Println(d.Value.Type().Elem())
 	}
-	return u
+	return d
 }
 
-func (u Deduplication) errorCheck(typ reflect.Kind) (err error) {
-	//fmt.Println(u.SliceInt)
-	if elem := u.Value.Type().Elem(); elem.Kind() != typ {
+func (d Deduplication) errorCheck(typ reflect.Kind) (err error) {
+	if d.Error != nil {
+		err = d.Error
+	} else if elem := d.Value.Type().Elem(); elem.Kind() != typ {
 		err = errors.New("Invalid Type -> " + elem.String())
-	} else if len(u.SliceStr) == 0 && len(u.SliceInt) == 0 {
-		err = errors.New("0 Size slice: " + u.Value.Type().String())
+	} else if len(d.SliceStr) == 0 && len(d.SliceInt) == 0 {
+		err = errors.New("0 Size slice: " + d.Value.Type().String())
 	}
 	return
 }
 
-func (u Deduplication) Int() (results []int, err error) {
-	defer u.clear()
-	if err = u.errorCheck(reflect.Int); err != nil {
-		return
+func (d Deduplication) Int() ([]int, error) {
+	defer d.clear()
+	if err := d.errorCheck(reflect.Int); err != nil {
+		return nil, err
 	}
-	results = u.SliceInt
-	return
+	return d.SliceInt, nil
 }
 
-func (u Deduplication) Str() (results []string, err error) {
-	defer u.clear()
-	if err = u.errorCheck(reflect.String); err != nil {
-		return
+func (d Deduplication) Str() ([]string, error) {
+	defer d.clear()
+	if err := d.errorCheck(reflect.String); err != nil {
+		return nil, err
 	}
-	results = u.SliceStr
-	return
+	return d.SliceStr, nil
 }
 
-func (u *Deduplication) clear() {
-	u.SliceInt = nil
-	u.SliceStr = nil
-	u.Value = nil
-	
-	u.Error = nil
+func (d *Deduplication) clear() {
+	d.SliceInt = nil
+	d.SliceStr = nil
+	d.Value = nil
+	d.Error = nil
 }
