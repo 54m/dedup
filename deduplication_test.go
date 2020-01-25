@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
-	
+
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -40,23 +40,23 @@ func deDuplicate2(args []int) []int {
 
 func deDuplicate3(args []int) []int {
 	encountered := make(map[int]struct{}, len(args))
-	
+
 	results := make([]int, 0, len(args))
-	
+
 	for _, element := range args {
 		if _, ok := encountered[element]; !ok {
 			encountered[element] = struct{}{}
 			results = append(results, element)
 		}
 	}
-	
+
 	return results
 }
 
 type DeduplicateTest struct {
 	Result []interface{}
-	Type reflect.Type
-	Error error
+	Type   reflect.Type
+	Error  error
 }
 
 func (u DeduplicateTest) DeDuplicate(args interface{}) DeduplicateTest {
@@ -122,7 +122,7 @@ func BenchmarkDeDuplicateInt1(b *testing.B) {
 	for i := 0; i < 100000; i++ {
 		data = append(data, i%99000)
 	}
-	
+
 	as := assert.New(b)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -136,7 +136,7 @@ func BenchmarkDeDuplicateInt2(b *testing.B) {
 	for i := 0; i < 100000; i++ {
 		data = append(data, i%99000)
 	}
-	
+
 	as := assert.New(b)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -150,7 +150,7 @@ func BenchmarkDeDuplicateInt3(b *testing.B) {
 	for i := 0; i < 100000; i++ {
 		data = append(data, i%99000)
 	}
-	
+
 	as := assert.New(b)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -164,7 +164,7 @@ func BenchmarkDeDuplicateStrInterface1(b *testing.B) {
 	for i := 0; i < 100000; i++ {
 		data = append(data, fmt.Sprintf("test-%08d", i%99000))
 	}
-	
+
 	as := assert.New(b)
 	b.ResetTimer()
 	util := new(DeduplicateTest)
@@ -179,7 +179,7 @@ func BenchmarkDeDuplicateIntInterface1(b *testing.B) {
 	for i := 0; i < 100000; i++ {
 		data = append(data, i%99000)
 	}
-	
+
 	as := assert.New(b)
 	b.ResetTimer()
 	util := new(DeduplicateTest)
@@ -194,7 +194,7 @@ func BenchmarkDeDuplicateStrInterface2(b *testing.B) {
 	for i := 0; i < 100000; i++ {
 		data = append(data, fmt.Sprintf("test-%08d", i%99000))
 	}
-	
+
 	as := assert.New(b)
 	b.ResetTimer()
 	ded := NewDeduplication()
@@ -212,7 +212,7 @@ func BenchmarkDeDuplicateIntInterface2(b *testing.B) {
 	for i := 0; i < 100000; i++ {
 		data = append(data, i%99000)
 	}
-	
+
 	as := assert.New(b)
 	b.ResetTimer()
 	ded := NewDeduplication()
