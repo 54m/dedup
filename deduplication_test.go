@@ -2,11 +2,12 @@ package dedup
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 	"testing"
 
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/xerrors"
 )
 
 func deDuplicate1(args []int) []int {
@@ -74,14 +75,14 @@ func (u DeduplicateTest) DeDuplicate(args interface{}) DeduplicateTest {
 		}
 		return u
 	default:
-		u.Error = errors.New("invalid type")
+		u.Error = xerrors.New("invalid type")
 		return u
 	}
 }
 
 func (u DeduplicateTest) checkType(typ reflect.Kind) (err error) {
 	if elem := u.Type.Elem(); elem.Kind() != typ {
-		err = errors.New("invalid Type -> " + elem.String())
+		err = xerrors.Errorf("invalid Type -> %s", elem.String())
 	}
 	return
 }
@@ -201,7 +202,7 @@ func BenchmarkDeDuplicateStrInterface2(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		result, err := ded.Do(data).Str()
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 		as.Len(result, 99000)
 	}
@@ -219,7 +220,7 @@ func BenchmarkDeDuplicateIntInterface2(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		result, err := ded.Do(data).Int()
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 		as.Len(result, 99000)
 	}
