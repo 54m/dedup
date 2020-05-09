@@ -158,20 +158,14 @@ func (d *Deduplication) errorCheck(typ reflect.Kind) (err error) {
 		len(d.SliceStr) == 0:
 		err = xerrors.Errorf("0 Size slice: %s", d.Value.Type().String())
 	}
-	if d.Error != nil {
-		err = d.Error
-	} else if elem := d.Value.Type().Elem(); elem.Kind() != typ {
-		err = xerrors.Errorf("Invalid Type -> %s", elem.String())
-	} else if len(d.SliceStr) == 0 && len(d.SliceInt) == 0 {
-		err = xerrors.Errorf("0 Size slice: %s", d.Value.Type().String())
-	}
+
 	return
 }
 
 // Float32 returns the deduplicated slice
 func (d *Deduplication) Float32() ([]float32, error) {
 	defer d.clear()
-	if err := d.errorCheck(reflect.Int); err != nil {
+	if err := d.errorCheck(reflect.Float32); err != nil {
 		return nil, err
 	}
 	return d.SliceFloat32, nil
@@ -180,7 +174,7 @@ func (d *Deduplication) Float32() ([]float32, error) {
 // Float64 returns the deduplicated slice
 func (d *Deduplication) Float64() ([]float64, error) {
 	defer d.clear()
-	if err := d.errorCheck(reflect.Int64); err != nil {
+	if err := d.errorCheck(reflect.Float64); err != nil {
 		return nil, err
 	}
 	return d.SliceFloat64, nil
