@@ -1,4 +1,4 @@
-package dedup
+package dedupe_test
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/54m/dedupe"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/xerrors"
 )
@@ -198,9 +199,12 @@ func BenchmarkDeDuplicateStrInterface2(b *testing.B) {
 
 	as := assert.New(b)
 	b.ResetTimer()
-	ded := NewDeduplication()
+	ded := dedupe.NewDeduplication()
 	for i := 0; i < b.N; i++ {
-		result, err := ded.Do(data).Str()
+		if err := ded.Do(&data); err != nil {
+			log.Fatalln(err)
+		}
+		result, err := ded.String()
 		if err != nil {
 			log.Println(err)
 		}
@@ -216,9 +220,12 @@ func BenchmarkDeDuplicateIntInterface2(b *testing.B) {
 
 	as := assert.New(b)
 	b.ResetTimer()
-	ded := NewDeduplication()
+	ded := dedupe.NewDeduplication()
 	for i := 0; i < b.N; i++ {
-		result, err := ded.Do(data).Int()
+		if err := ded.Do(&data); err != nil {
+			log.Fatalln(err)
+		}
+		result, err := ded.Int()
 		if err != nil {
 			log.Println(err)
 		}

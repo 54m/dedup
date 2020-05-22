@@ -1,4 +1,4 @@
-module github.com/54mch4n/dedup
+module github.com/54m/dedupe
 
 go 1.14
 
