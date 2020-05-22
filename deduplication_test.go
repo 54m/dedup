@@ -22,8 +22,9 @@ func TestDo(t *testing.T) {
 		}
 	})
 
+	dup := dedupe.NewDeduplication()
+
 	t.Run("Case:[]int", func(tr *testing.T) {
-		dup := dedupe.NewDeduplication()
 		slice := []int{1, 1, 2, 2, 3, 3}
 		dup.Do(&slice)
 		if sl, err := dup.Int(); err == nil {
@@ -38,7 +39,6 @@ func TestDo(t *testing.T) {
 	})
 
 	t.Run("Case:[]float64", func(tr *testing.T) {
-		dup := dedupe.NewDeduplication()
 		slice := []float64{0.1, 0.1, 0.2, 0.2, 0.3, 0.3}
 		dup.Do(&slice)
 		if sl, err := dup.Float64(); err == nil {
@@ -67,8 +67,6 @@ func TestDo(t *testing.T) {
 	}
 
 	t.Run("Case:[]struct", func(tr *testing.T) {
-		dup := dedupe.NewDeduplication()
-
 		expected := []duplication{
 			{
 				Name: "A",
@@ -126,8 +124,6 @@ func TestDo(t *testing.T) {
 	})
 
 	t.Run("Case:[]Pointer", func(tr *testing.T) {
-		dup := dedupe.NewDeduplication()
-
 		expected := []*duplication{
 			{
 				Name: "A",
